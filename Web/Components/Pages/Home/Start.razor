@@ -1,0 +1,10 @@
+﻿<div>
+    <h1>FLAGGER</h1>
+
+    <button type="button" class="btn btn-success" @onclick="OnStart">Start</button>
+</div>
+
+@code {
+    [Parameter]
+    public Func<Task> OnStart { get; set; }
+}

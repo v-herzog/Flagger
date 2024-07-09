@@ -1,0 +1,96 @@
+﻿@using MongoDB.Bson
+@using MongoDB.Driver
+@using Flagger.Repositories
+@using Flagger.Components.Pages.Home
+@using System.Linq;
+
+@page "/"
+@inject IFlagRepository flagRepository
+
+@if (gameState == GameStateEnum.START)
+{
+    <Start OnStart="StartNewGame" />
+}
+@if (gameState == GameStateEnum.GUESS)
+{
+    <Guess OnFail="EndGame"
+           OnSuccess="ShowDetails"
+           FlagId="@next"
+           Score="@history.Count()" />
+}
+@if (gameState == GameStateEnum.DETAILS)
+{
+    <Details OnNext="ProcessNext"
+             Country="@countryDetails" />
+}
+@if (gameState == GameStateEnum.FINISH)
+{
+    <End OnNewGame="StartNewGame"
+         Score="@history.Count()"
+         CountryName="@countryName" />
+}
+
+@code {
+    private List<ObjectId> shuffled;
+    private List<string> history;
+
+    private GameStateEnum gameState;
+    private Country countryDetails;
+    private string countryName;
+    private ObjectId next;
+
+    protected override void OnInitialized()
+    {
+        this.gameState = GameStateEnum.START;
+    }
+
+    private async Task StartNewGame()
+    {
+        var ids = await flagRepository.GetAllIds();
+        this.shuffled = Shuffle(ids).ToList();
+        this.history = new List<string>();
+
+        ProcessNext();
+    }
+
+    private void ProcessNext()
+    {
+        this.shuffled.RemoveAll(x => x == next);
+        this.next = this.shuffled.ElementAt(0);
+        this.gameState = GameStateEnum.GUESS;
+
+        StateHasChanged();
+    }
+
+    private void ShowDetails(Country countryDetails)
+    {
+        this.countryDetails = countryDetails;
+        this.gameState = GameStateEnum.DETAILS;
+        this.history.Add(countryDetails.Name);
+
+        StateHasChanged();
+    }
+
+    private void EndGame(string countryName)
+    {
+        this.countryName = countryName;
+        this.gameState = GameStateEnum.FINISH;
+
+        StateHasChanged();
+    }
+
+    // TODO move to extension method
+    private IEnumerable<T> Shuffle<T>(IEnumerable<T> source)
+    {
+        Random rnd = new Random();
+        return source.OrderBy((item) => rnd.Next());
+    }
+
+    enum GameStateEnum
+    {
+        START,
+        GUESS,
+        DETAILS,
+        FINISH
+    }
+}

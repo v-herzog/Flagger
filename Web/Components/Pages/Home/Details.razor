@@ -1,0 +1,35 @@
+﻿@using MongoDB.Bson
+@using Flagger.Repositories
+
+@inject ICountryRepository CountryRepository
+
+<div>
+    <h3>@Country.Name</h3>
+
+    <p>Abbreviation: @Country.Abbreviation</p>
+    <p>Currency Code: @Country.CurrencyCode</p>
+    <p>Capital: @Country.Capital</p>
+    <p>Largest City: @Country.LargestCity</p>
+    <p>Land Area: @Country.LandArea km2</p>
+    <p>Agricultural Land: @Country.AgriculturalLand</p>
+    <p>Armed Forces Size: @Country.ArmedForcesSize</p>
+    
+    <p>Co2 Emissions: @Country.Co2Emissions</p>
+    <p>Forested Area: @Country.ForestedArea %</p>
+    
+    <p>Life Expectancy: @Country.LifeExpectancy years</p>
+    <p>Birth Rate: @Country.BirthRate births per 1,000 total population</p>
+    <p>Fertility Rate: @Country.FertilityRate kids per woman</p>
+    <p>Infant Mortality: @Country.InfantMortality per 1,000 live births</p>
+    
+    <p>Gross Domestic Product: @Country.GDP</p>
+
+    <button type="button" class="btn btn-success" @onclick="OnNext">NEXT</button>
+</div>
+
+@code {
+    [Parameter]
+    public Country Country { get; set; }
+    [Parameter]
+    public Action OnNext { get; set; }
+}

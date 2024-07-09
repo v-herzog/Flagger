@@ -1,0 +1,78 @@
+﻿@using MongoDB.Bson
+@using Flagger.Repositories
+
+@inject IFlagRepository flagRepository
+@inject ICountryRepository countryRepository
+
+<div>
+    @if (string.IsNullOrEmpty(flagSrc) || countryNames is null || !countryNames.Any())
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <p># @Score</p>
+
+        <img src=@($"data:image/png;base64,{flagSrc}") alt="flag image" />
+        
+        <p>Which Country is this?</p>
+
+        <select class="form-select" @onchange="@(args => selected = args.Value.ToString())">
+            <option selected disabled>Choose...</option>
+            @foreach (var Country in countryNames)
+            {
+                <option value="@Country.Key">@Country.Value</option>
+            }
+        </select>
+
+        <div class="row">
+            <button type="button"
+                    disabled="@(string.IsNullOrEmpty(selected))"
+                    class=@(string.IsNullOrEmpty(selected) ? "btn btn-outline-success" : "btn btn-success")
+                    @onclick="Validate">VALIDATE</button>    
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Action<Country> OnSuccess { get; set; }
+    [Parameter]
+    public Action<string> OnFail { get; set; }
+    [Parameter]
+    public ObjectId FlagId { get; set; }
+    [Parameter]
+    public int Score { get; set; }
+
+    private IDictionary<string, string> countryNames;
+    private string selected;
+    private Country country;
+    private string flagSrc;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var array = await flagRepository.GetContentById(FlagId);
+        flagSrc = Convert.ToBase64String(array);
+
+        countryNames = await countryRepository.GetAllNames();
+    }
+
+    private async Task Validate()
+    {
+        var metadata = await flagRepository.GetMetadataById(FlagId);
+        var countryId = (ObjectId)metadata["countryId"];
+
+        country = await countryRepository.GetById(countryId);
+
+        if (selected == countryId.ToString())
+        {
+            // Confeti
+            // Sound
+            OnSuccess.Invoke(country);
+        }
+        else
+        {
+            OnFail.Invoke(country.Name);
+        }
+    }
+}

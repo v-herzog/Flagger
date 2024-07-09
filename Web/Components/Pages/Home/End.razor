@@ -1,0 +1,22 @@
+﻿@using MongoDB.Bson
+@using Flagger.Repositories
+
+@inject ICountryRepository CountryRepository
+
+<div>
+    <h3>Oh no :(</h3>
+    <h3>That was @CountryName</h3>
+
+    <p>Your score was @Score</p>
+
+    <button type="button" class="btn btn-success" @onclick="OnNewGame">NEW GAME</button>
+</div>
+
+@code {
+    [Parameter]
+    public Func<Task> OnNewGame { get; set; }
+    [Parameter]
+    public string CountryName { get; set; }
+    [Parameter]
+    public int Score { get; set; }
+}
