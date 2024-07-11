@@ -1,6 +1,5 @@
-using MongoDB.Driver;
 using Flagger.Components;
-using Flagger.Repositories;
+using Flagger.Data.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,13 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton(provider =>
-    {
-        var client = new MongoClient("mongodb://localhost:27017");
-        return client.GetDatabase("Flagger");
-    })
-    .AddSingleton<IFlagRepository, FlagRepository>()
-    .AddSingleton<ICountryRepository, CountryRepository>();
+builder.Services.ConfigureMongoDB();
 
 var app = builder.Build();
 

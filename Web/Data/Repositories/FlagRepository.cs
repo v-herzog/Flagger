@@ -1,8 +1,9 @@
-﻿using MongoDB.Bson;
+﻿using Flagger.Data.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 
-namespace Flagger.Repositories
+namespace Flagger.Data.Repositories
 {
     public class FlagRepository : IFlagRepository
     {
@@ -13,24 +14,24 @@ namespace Flagger.Repositories
             bucket = new GridFSBucket(database);
         }
 
-        public async Task<IEnumerable<ObjectId>> GetAllIds()
+        public async Task<IEnumerable<string>> GetAllIds()
         {
             using var cursor = await bucket.FindAsync(Builders<GridFSFileInfo<ObjectId>>.Filter.Empty);
 
-            return (await cursor.ToListAsync()).Select(x => x.Id);
+            return (await cursor.ToListAsync()).Select(x => x.Id.ToString());
         }
 
-        public async Task<byte[]> GetContentById(ObjectId id)
+        public async Task<byte[]> GetContentById(string id)
         {
             using var stream = new MemoryStream();
 
-            await bucket.DownloadToStreamAsync(id, stream);
+            await bucket.DownloadToStreamAsync(ObjectId.Parse(id), stream);
             return stream.ToArray();
         }
 
-        public async Task<IDictionary<string, object>> GetMetadataById(ObjectId id)
+        public async Task<IDictionary<string, object>> GetMetadataById(string id)
         {
-            var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.Eq(x => x.Id, id);
+            var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.Eq(x => x.Id, ObjectId.Parse(id));
             using var cursor = await bucket.FindAsync(filter);
 
             var flag = (await cursor.ToListAsync()).FirstOrDefault();

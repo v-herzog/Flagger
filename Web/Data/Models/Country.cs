@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Flagger.Repositories
+namespace Flagger.Data.Models
 {
     [BsonIgnoreExtraElements]
     public class Country

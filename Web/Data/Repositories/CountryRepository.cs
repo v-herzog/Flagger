@@ -1,7 +1,9 @@
-﻿using MongoDB.Bson;
+﻿using Flagger.Data.Interfaces;
+using Flagger.Data.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Flagger.Repositories
+namespace Flagger.Data.Repositories
 {
     public class CountryRepository : ICountryRepository
     {
@@ -19,9 +21,9 @@ namespace Flagger.Repositories
                 .ToDictionary(x => x.Id.ToString(), x => x.Name);
         }
 
-        public async Task<Country> GetById(ObjectId id)
+        public async Task<Country> GetById(string id)
         {
-            var filter = Builders<Country>.Filter.Eq(x => x.Id, id);
+            var filter = Builders<Country>.Filter.Eq(x => x.Id, ObjectId.Parse(id));
             return await collection.Find(filter).FirstOrDefaultAsync();
         }
     }
