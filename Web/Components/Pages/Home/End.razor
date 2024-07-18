@@ -1,13 +1,13 @@
-﻿@using MongoDB.Bson
-@using Flagger.Data.Interfaces
+﻿@using Flagger.Application.Entities
+@using Flagger.Application.Interfaces
 
-@inject ICountryRepository CountryRepository
+@inject IGameService gameService
 
 <div>
     <h3>Oh no :(</h3>
-    <h3>That was @CountryName</h3>
+    <h3>That was @game.CurrentStage.Country.Name</h3>
 
-    <p>Your score was @Score</p>
+    <p>Your score was @game.Score</p>
 
     <button type="button" class="btn btn-success" @onclick="OnNewGame">NEW GAME</button>
 </div>
@@ -15,8 +15,8 @@
 @code {
     [Parameter]
     public Func<Task> OnNewGame { get; set; }
-    [Parameter]
-    public string CountryName { get; set; }
-    [Parameter]
-    public int Score { get; set; }
+
+    private Game game;
+
+    protected override void OnInitialized() => this.game = gameService.Get();
 }

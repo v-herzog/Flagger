@@ -1,36 +1,37 @@
-﻿@using MongoDB.Bson
-@using Flagger.Data.Interfaces
-@using Flagger.Data.Models
+﻿@using Flagger.Application.Entities
+@using Flagger.Application.Interfaces
 
-@inject ICountryRepository CountryRepository
+@inject IGameService gameService
 
 <div>
-    <h3>@Country.Name</h3>
+    <h3>@country.Name</h3>
 
-    <p>Abbreviation: @Country.Abbreviation</p>
-    <p>Currency Code: @Country.CurrencyCode</p>
-    <p>Capital: @Country.Capital</p>
-    <p>Largest City: @Country.LargestCity</p>
-    <p>Land Area: @Country.LandArea km2</p>
-    <p>Agricultural Land: @Country.AgriculturalLand</p>
-    <p>Armed Forces Size: @Country.ArmedForcesSize</p>
+    <p>Abbreviation: @country.Abbreviation</p>
+    <p>Currency Code: @country.CurrencyCode</p>
+    <p>Capital: @country.Capital</p>
+    <p>Largest City: @country.LargestCity</p>
+    <p>Land Area: @country.LandArea km2</p>
+    <p>Agricultural Land: @country.AgriculturalLand</p>
+    <p>Armed Forces Size: @country.ArmedForcesSize</p>
     
-    <p>Co2 Emissions: @Country.Co2Emissions</p>
-    <p>Forested Area: @Country.ForestedArea %</p>
+    <p>Co2 Emissions: @country.Co2Emissions</p>
+    <p>Forested Area: @country.ForestedArea %</p>
     
-    <p>Life Expectancy: @Country.LifeExpectancy years</p>
-    <p>Birth Rate: @Country.BirthRate births per 1,000 total population</p>
-    <p>Fertility Rate: @Country.FertilityRate kids per woman</p>
-    <p>Infant Mortality: @Country.InfantMortality per 1,000 live births</p>
+    <p>Life Expectancy: @country.LifeExpectancy years</p>
+    <p>Birth Rate: @country.BirthRate births per 1,000 total population</p>
+    <p>Fertility Rate: @country.FertilityRate kids per woman</p>
+    <p>Infant Mortality: @country.InfantMortality per 1,000 live births</p>
     
-    <p>Gross Domestic Product: @Country.GDP</p>
+    <p>Gross Domestic Product: @country.GDP</p>
 
     <button type="button" class="btn btn-success" @onclick="OnNext">NEXT</button>
 </div>
 
 @code {
     [Parameter]
-    public Country Country { get; set; }
-    [Parameter]
     public Action OnNext { get; set; }
+
+    private Country country;
+
+    protected override void OnInitialized() => this.country = gameService.Get().CurrentStage.Country;
 }

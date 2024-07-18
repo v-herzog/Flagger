@@ -1,3 +1,5 @@
+using Flagger.Application.Interfaces;
+using Flagger.Application.Services;
 using Flagger.Components;
 using Flagger.Data.Configuration;
 
@@ -8,6 +10,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.ConfigureMongoDB();
+
+builder.Services.AddSingleton<IGameService, GameService>();
 
 var app = builder.Build();
 

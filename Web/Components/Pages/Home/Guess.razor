@@ -1,28 +1,26 @@
-﻿@using MongoDB.Bson
-@using Flagger.Data.Interfaces
-@using Flagger.Data.Models
+﻿@using Flagger.Application.Entities
+@using Flagger.Application.Interfaces
 
-@inject IFlagRepository flagRepository
-@inject ICountryRepository countryRepository
+@inject IGameService gameService
 
 <div>
-    @if (string.IsNullOrEmpty(flagSrc) || countryNames is null || !countryNames.Any())
+    @if (game?.CurrentStage?.Flag?.Source is null || countryNames is null || !countryNames.Any())
     {
         <p>Loading...</p>
     }
     else
     {
-        <p># @Score</p>
+        <p># @game.Score</p>
 
-        <img src=@($"data:image/png;base64,{flagSrc}") alt="flag image" />
+        <img src=@($"data:image/png;base64,{game.CurrentStage.Flag.Source}") alt="flag image" />
         
         <p>Which Country is this?</p>
 
         <select class="form-select" @onchange="@(args => selected = args.Value.ToString())">
             <option selected disabled>Choose...</option>
-            @foreach (var Country in countryNames)
+            @foreach (var country in countryNames)
             {
-                <option value="@Country.Key">@Country.Value</option>
+                <option value="@country.Key">@country.Value</option>
             }
         </select>
 
@@ -37,43 +35,29 @@
 
 @code {
     [Parameter]
-    public Action<Country> OnSuccess { get; set; }
-    [Parameter]
-    public Action<string> OnFail { get; set; }
-    [Parameter]
-    public ObjectId FlagId { get; set; }
-    [Parameter]
-    public int Score { get; set; }
+    public Action OnValidation { get; set; }
 
     private IDictionary<string, string> countryNames;
     private string selected;
-    private Country country;
-    private string flagSrc;
+    private Game game;
 
     protected override async Task OnInitializedAsync()
     {
-        var array = await flagRepository.GetContentById(FlagId);
-        flagSrc = Convert.ToBase64String(array);
+        await gameService.SetupFlag();
 
-        countryNames = await countryRepository.GetAllNames();
+        this.game = gameService.Get();
+        this.countryNames = await gameService.GetCountryNames();
     }
 
     private async Task Validate()
     {
-        var metadata = await flagRepository.GetMetadataById(FlagId);
-        var countryId = (ObjectId)metadata["countryId"];
-
-        country = await countryRepository.GetById(countryId);
-
-        if (selected == countryId.ToString())
+        var result = await gameService.Validate(selected);
+        if (result)
         {
             // Confeti
             // Sound
-            OnSuccess.Invoke(country);
         }
-        else
-        {
-            OnFail.Invoke(country.Name);
-        }
+
+        OnValidation.Invoke();
     }
 }
