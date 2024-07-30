@@ -10,32 +10,36 @@
     }
     else
     {
-        <p># @game.Score</p>
+        <span class="badge text-bg-secondary mb-1">
+            # @game.Score
+        </span>
 
-        <img src=@($"data:image/png;base64,{game.CurrentStage.Flag.Source}") alt="flag image" />
+        <img src=@($"data:image/png;base64,{game.CurrentStage.Flag.Source}") alt="flag image" class="img-thumbnail mb-3" />
         
-        <p>Which Country is this?</p>
-
-        <select class="form-select" @onchange="@(args => selected = args.Value.ToString())">
-            <option selected disabled>Choose...</option>
-            @foreach (var country in countryNames)
-            {
-                <option value="@country.Key">@country.Value</option>
-            }
-        </select>
-
-        <div class="row">
+        <form>
+            <div class="mb-5">
+                <label for="countrySelect" class="form-label">Which Country is this?</label>
+                <select id="countrySelect" class="form-select" @onchange="@(args => selected = args.Value.ToString())">
+                    <option selected disabled>Choose...</option>
+                    @foreach (var country in countryNames)
+                    {
+                        <option value="@country.Key">@country.Value</option>
+                    }
+                </select>
+            </div>
             <button type="button"
                     disabled="@(string.IsNullOrEmpty(selected))"
-                    class=@(string.IsNullOrEmpty(selected) ? "btn btn-outline-success" : "btn btn-success")
-                    @onclick="Validate">VALIDATE</button>    
-        </div>
+                    class=@("col-12 mt-5 mb-3 btn " + (string.IsNullOrEmpty(selected) ? "btn-outline-success" : "btn-success"))
+                    @onclick="Validate">
+                VALIDATE
+            </button>
+        </form>
     }
 </div>
 
 @code {
     [Parameter]
-    public Action OnValidation { get; set; }
+    public Action<bool> OnValidation { get; set; }
 
     private IDictionary<string, string> countryNames;
     private string selected;
@@ -52,12 +56,6 @@
     private async Task Validate()
     {
         var result = await gameService.Validate(selected);
-        if (result)
-        {
-            // Confeti
-            // Sound
-        }
-
-        OnValidation.Invoke();
+        OnValidation.Invoke(result);
     }
 }

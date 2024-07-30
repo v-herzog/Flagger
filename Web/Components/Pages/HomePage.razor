@@ -1,4 +1,5 @@
-﻿@using Flagger.Application.Entities
+﻿@using BlafettisLib
+@using Flagger.Application.Entities
 @using Flagger.Application.Interfaces
 @using Flagger.Components.Pages.Home
 
@@ -13,19 +14,24 @@
     }
     @if (game.State == GameStateEnum.GUESS)
     {
-        <Guess OnValidation=@(() => StateHasChanged()) />
+        <Guess OnValidation="ShowConfetti" />
     }
     @if (game.State == GameStateEnum.DETAILS)
     {
-        <Details OnNext="ProcessNext" />
+        <Details OnNext="SetupNextFlag" />
     }
     @if (game.State == GameStateEnum.FINISH)
     {
         <End OnNewGame="StartNewGame" />
     }
+
+    <div class="col-6 offset-6">
+        <Blafettis @ref="confetti" />
+    </div>
 }
 
 @code {
+    private Blafettis confetti;
     private Game game;
 
     protected override void OnInitialized()
@@ -38,8 +44,16 @@
         this.game = await gameService.Create();
     }
 
-    private async void ProcessNext()
+    private void ShowConfetti(bool result)
     {
-        await gameService.SetupFlag();
+        if (result)
+            confetti.RaiseConfetti();
+
+        StateHasChanged();
+    }
+
+    private async Task SetupNextFlag()
+    {
+        await gameService.SetupFlag().ConfigureAwait(true);
     }
 }

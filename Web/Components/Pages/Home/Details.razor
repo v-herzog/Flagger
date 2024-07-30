@@ -4,32 +4,35 @@
 @inject IGameService gameService
 
 <div>
-    <h3>@country.Name</h3>
+    <p class="fs-1 fw-bold text-secondary-emphasis">@country.Name</p>
 
-    <p>Abbreviation: @country.Abbreviation</p>
-    <p>Currency Code: @country.CurrencyCode</p>
-    <p>Capital: @country.Capital</p>
-    <p>Largest City: @country.LargestCity</p>
-    <p>Land Area: @country.LandArea km2</p>
-    <p>Agricultural Land: @country.AgriculturalLand</p>
-    <p>Armed Forces Size: @country.ArmedForcesSize</p>
-    
-    <p>Co2 Emissions: @country.Co2Emissions</p>
-    <p>Forested Area: @country.ForestedArea %</p>
-    
-    <p>Life Expectancy: @country.LifeExpectancy years</p>
-    <p>Birth Rate: @country.BirthRate births per 1,000 total population</p>
-    <p>Fertility Rate: @country.FertilityRate kids per woman</p>
-    <p>Infant Mortality: @country.InfantMortality per 1,000 live births</p>
-    
-    <p>Gross Domestic Product: @country.GDP</p>
+    <ul class="list-group">
+        <CountryItem Title="Abbreviation" Value="@country.Abbreviation" Color="true" />
+        <CountryItem Title="Currency Code" Value="@country.CurrencyCode" />
+        <CountryItem Title="Capital" Value="@country.Capital" />
+        <CountryItem Title="Largest City" Value="@country.LargestCity" />
 
-    <button type="button" class="btn btn-success" @onclick="OnNext">NEXT</button>
+        <CountryItem Title="Land Area" Value="@country.LandArea" />
+        <CountryItem Title="Agricultural Land" Value="@country.AgriculturalLand" />
+        <CountryItem Title="Armed Forces Size" Value="@country.ArmedForcesSize" />
+
+        <CountryItem Title="Co2 Emissions" Value="@country.Co2Emissions" />
+        <CountryItem Title="Forested Area" Value="@country.ForestedArea" />
+
+        <CountryItem Title="Life Expectancy" Value="@country.LifeExpectancy" />
+        <CountryItem Title="Birth Rate" Value="@country.BirthRate" />
+        <CountryItem Title="Fertility Rate" Value="@country.FertilityRate" />
+        <CountryItem Title="Infant Mortality" Value="@country.InfantMortality" />
+
+        <CountryItem Title="Gross Domestic Product" Value="@country.GDP" />
+    </ul>
+
+    <button type="button" class="btn btn-success mt-3 mb-3 col-12" @onclick="OnNext">NEXT</button>
 </div>
 
 @code {
     [Parameter]
-    public Action OnNext { get; set; }
+    public Func<Task> OnNext { get; set; }
 
     private Country country;
 

@@ -4,12 +4,15 @@
 @inject IGameService gameService
 
 <div>
-    <h3>Oh no :(</h3>
-    <h3>That was @game.CurrentStage.Country.Name</h3>
+    <p class="fs-3 fw-bold text-secondary-emphasis">
+        Oh no :(
+        <br/>
+        That was @game.CurrentStage.Country.Name
+    </p>
 
-    <p>Your score was @game.Score</p>
+    <p class="fs-5 mb-5">Your score was @game.Score</p>
 
-    <button type="button" class="btn btn-success" @onclick="OnNewGame">NEW GAME</button>
+    <button type="button" class="btn btn-success col-12 mt-5 mb-3" @onclick="OnNewGame">NEW GAME</button>
 </div>
 
 @code {
